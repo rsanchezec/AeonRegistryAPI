@@ -1,4 +1,6 @@
 // Crea el constructor de la aplicación web con los argumentos de configuración
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Agrega los servicios al contenedor de inyección de dependencias
@@ -10,6 +12,14 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Services.AddSwaggerGen();
 
 builder.Services.AddcustomSwagger();
+
+//get a connection to the database
+var connectionString = DataUtility.GetConnectionString(builder.Configuration);
+
+//Configure the database context for PostgreSQL
+builder.Services.AddDbContext<ApplicationDbContext>(options => 
+    options.UseNpgsql(connectionString));
+
 
 // Construye la aplicación web a partir de la configuración del builder
 var app = builder.Build();
