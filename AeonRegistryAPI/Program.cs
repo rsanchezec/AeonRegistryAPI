@@ -5,9 +5,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Obtén más información sobre cómo configurar OpenAPI en https://aka.ms/aspnet/openapi
 //builder.Services.AddOpenApi();
 // Registra el explorador de endpoints para descubrir las rutas de la API
-builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddEndpointsApiExplorer();
 // Registra el generador de Swagger para producir la documentación OpenAPI
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
+
+builder.Services.AddcustomSwagger();
 
 // Construye la aplicación web a partir de la configuración del builder
 var app = builder.Build();
@@ -25,7 +27,7 @@ if (app.Environment.IsDevelopment())
 
 // Redirige automáticamente las solicitudes HTTP hacia HTTPS
 app.UseHttpsRedirection();
-
+app.UseStaticFiles();
 // Mapea un endpoint HTTP GET en la ruta /api/Welcome
 app.MapGet("/api/Welcome", () =>
 {
