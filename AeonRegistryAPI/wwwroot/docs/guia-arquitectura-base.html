@@ -1,0 +1,1198 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guia base para APIs ASP.NET con Identity</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --line: #d9e1ea;
+      --accent: #0f766e;
+      --accent-dark: #115e59;
+      --code-bg: #111827;
+      --code-text: #e5e7eb;
+      --note: #ecfeff;
+      --warning: #fff7ed;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font-family: "Segoe UI", Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      border-right: 1px solid var(--line);
+      background: #0f172a;
+      color: white;
+      padding: 24px 18px;
+    }
+
+    .brand {
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .brand h1 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+
+    .brand p {
+      margin: 0;
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+
+    nav a {
+      display: block;
+      color: #e2e8f0;
+      text-decoration: none;
+      padding: 9px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    nav a:hover,
+    nav a:focus {
+      background: rgba(20, 184, 166, 0.18);
+      color: #ffffff;
+      outline: none;
+    }
+
+    main {
+      max-width: 1060px;
+      width: 100%;
+      padding: 42px 44px 80px;
+    }
+
+    .hero {
+      margin-bottom: 28px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero h2 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      max-width: 820px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    section {
+      margin: 0 0 34px;
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    section h2 {
+      margin: 0 0 14px;
+      font-size: 25px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    section h3 {
+      margin: 22px 0 8px;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 14px;
+    }
+
+    ul,
+    ol {
+      margin-top: 8px;
+      padding-left: 24px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    code {
+      padding: 2px 5px;
+      border-radius: 4px;
+      background: #e8eef5;
+      color: #0f172a;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.94em;
+    }
+
+    pre {
+      overflow-x: auto;
+      margin: 14px 0 4px;
+      padding: 16px;
+      border-radius: 8px;
+      background: var(--code-bg);
+      color: var(--code-text);
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    pre code {
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      font-size: inherit;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 15px;
+    }
+
+    th,
+    td {
+      vertical-align: top;
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    th {
+      background: #eef5f4;
+      color: #0f172a;
+    }
+
+    .note,
+    .warning {
+      margin: 16px 0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+    }
+
+    .note {
+      background: var(--note);
+    }
+
+    .warning {
+      background: var(--warning);
+    }
+
+    .step {
+      border-left: 4px solid var(--accent);
+      padding-left: 14px;
+    }
+
+    .folder-tree {
+      white-space: pre;
+    }
+
+    .checklist li::marker {
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        position: relative;
+        height: auto;
+      }
+
+      nav {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 4px;
+      }
+
+      main {
+        padding: 28px 18px 56px;
+      }
+
+      .hero h2 {
+        font-size: 28px;
+      }
+
+      section {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <div class="brand">
+        <h1>Arquitectura base API</h1>
+        <p>ASP.NET Core, Identity, EF Core, tokens y Swagger.</p>
+      </div>
+      <nav aria-label="Menu principal">
+        <a href="#vision">1. Vision general</a>
+        <a href="#flujo">2. Flujo de trabajo</a>
+        <a href="#paquetes">3. Paquetes necesarios</a>
+        <a href="#carpetas">4. Estructura de carpetas</a>
+        <a href="#clases">5. Clases base</a>
+        <a href="#program">6. Program.cs</a>
+        <a href="#identity">7. Identity y usuarios</a>
+        <a href="#tokens">8. Tokens y login</a>
+        <a href="#swagger">9. Swagger</a>
+        <a href="#migraciones">10. Migraciones</a>
+        <a href="#endpoints">11. Endpoints protegidos</a>
+        <a href="#endpoint-modules">12. Modulos endpoint</a>
+        <a href="#dtos">13. DTOs y respuestas</a>
+        <a href="#services">14. Services</a>
+        <a href="#middleware">15. Middleware</a>
+        <a href="#extensions">16. Extensions</a>
+        <a href="#configuracion">17. Configuracion</a>
+        <a href="#seed">18. Seed inicial</a>
+        <a href="#roles">19. Roles y policies</a>
+        <a href="#errores">20. Errores comunes</a>
+        <a href="#checklist">21. Checklist final</a>
+      </nav>
+    </aside>
+
+    <main>
+      <header class="hero">
+        <h2>Guia paso a paso para iniciar una API con autenticacion</h2>
+        <p>
+          Esta guia resume la base comun para proyectos tipo backend API:
+          usuarios, login, roles, base de datos, tokens Bearer, Swagger y endpoints protegidos.
+          El tema del negocio cambia, pero esta preparacion suele repetirse.
+        </p>
+      </header>
+
+      <section id="vision">
+        <h2>1. Vision General</h2>
+        <p>
+          En proyectos como inventarios, CRM, sistemas medicos, cursos, reportes o catalogos internos,
+          casi siempre necesitas una base comun antes de crear las entidades propias del negocio.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Parte</th>
+              <th>Para que sirve</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>ASP.NET Core Minimal API</code></td>
+              <td>Define endpoints HTTP como <code>GET</code>, <code>POST</code>, <code>PUT</code> y <code>DELETE</code>.</td>
+            </tr>
+            <tr>
+              <td><code>Entity Framework Core</code></td>
+              <td>Conecta C# con la base de datos usando modelos y migraciones.</td>
+            </tr>
+            <tr>
+              <td><code>ASP.NET Identity</code></td>
+              <td>Maneja usuarios, passwords, roles, tokens y tablas de autenticacion.</td>
+            </tr>
+            <tr>
+              <td><code>JWT / Bearer token</code></td>
+              <td>Permite llamar endpoints privados despues de iniciar sesion.</td>
+            </tr>
+            <tr>
+              <td><code>Swagger</code></td>
+              <td>Permite documentar y probar la API desde el navegador.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="flujo">
+        <h2>2. Flujo De Trabajo</h2>
+        <ol>
+          <li>Crear el proyecto API.</li>
+          <li>Instalar paquetes de EF Core, PostgreSQL o SQL Server, Identity y Swagger.</li>
+          <li>Crear el modelo de usuario personalizado.</li>
+          <li>Crear el <code>DbContext</code> heredando de <code>IdentityDbContext</code>.</li>
+          <li>Configurar la cadena de conexion.</li>
+          <li>Registrar servicios en <code>Program.cs</code>.</li>
+          <li>Configurar autenticacion y autorizacion.</li>
+          <li>Crear migraciones y actualizar la base de datos.</li>
+          <li>Probar register/login en Swagger.</li>
+          <li>Crear services para logica reutilizable o integraciones externas.</li>
+          <li>Crear middleware solo si necesitas interceptar requests globalmente.</li>
+          <li>Crear entidades y endpoints propios del negocio.</li>
+          <li>Proteger endpoints con <code>RequireAuthorization()</code> o policies.</li>
+        </ol>
+        <div class="note">
+          En tu proyecto actual ya estas alrededor del paso 9: la base de Identity, tokens,
+          Swagger y base de datos ya esta levantada.
+        </div>
+      </section>
+
+      <section id="paquetes">
+        <h2>3. Paquetes Necesarios</h2>
+        <p>Para una API con Identity y PostgreSQL, normalmente instalas paquetes como estos:</p>
+        <pre><code>dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore
+dotnet add package Microsoft.EntityFrameworkCore
+dotnet add package Microsoft.EntityFrameworkCore.Tools
+dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+dotnet add package Swashbuckle.AspNetCore</code></pre>
+
+        <p>Si el proyecto usa JWT explicito, tambien puede incluir:</p>
+        <pre><code>dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer</code></pre>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Paquete</th>
+              <th>Uso</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Identity.EntityFrameworkCore</code></td>
+              <td>Permite guardar usuarios, roles y claims de Identity en la base de datos.</td>
+            </tr>
+            <tr>
+              <td><code>EntityFrameworkCore.Tools</code></td>
+              <td>Habilita comandos como <code>dotnet ef migrations add</code>.</td>
+            </tr>
+            <tr>
+              <td><code>Npgsql.EntityFrameworkCore.PostgreSQL</code></td>
+              <td>Proveedor para conectarse a PostgreSQL.</td>
+            </tr>
+            <tr>
+              <td><code>Swashbuckle.AspNetCore</code></td>
+              <td>Genera Swagger UI y documentacion OpenAPI.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="carpetas">
+        <h2>4. Estructura De Carpetas</h2>
+        <p>Una estructura limpia para este tipo de proyecto puede verse asi:</p>
+        <pre class="folder-tree"><code>MyProjectAPI/
+  Data/
+    ApplicationDbContext.cs
+    DataUtility.cs
+  Models/
+    ApplicationUser.cs
+    Product.cs
+    Order.cs
+  Models/Response/
+    ApiResponse.cs
+    UserProfileResponse.cs
+  Endpoints/
+    Auth/
+      AuthEndpoints.cs
+      Models/
+        RegisterUserRequest.cs
+        ResetPasswordRequest.cs
+        LoginResponse.cs
+    Products/
+      ProductEndpoints.cs
+      Models/
+        ProductCreateRequest.cs
+        ProductResponse.cs
+  Services/
+    Interfaces/
+      IEmailService.cs
+      IFileStorageService.cs
+    ConsoleEmailService.cs
+    EmailService.cs
+    FileStorageService.cs
+  Extensions/
+    OpenAPISwaggerExtensions.cs
+    ServiceCollectionExtensions.cs
+    EndpointRouteBuilderExtensions.cs
+  Middleware/
+    BlockIdentityEndpoints.cs
+    ExceptionHandlingMiddleware.cs
+  Migrations/
+  wwwroot/
+    images/
+    docs/
+  Program.cs
+  appsettings.json</code></pre>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Carpeta</th>
+              <th>Responsabilidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Data</code></td>
+              <td>Contexto de base de datos y utilidades de conexion.</td>
+            </tr>
+            <tr>
+              <td><code>Models</code></td>
+              <td>Entidades que representan tablas o datos centrales del dominio.</td>
+            </tr>
+            <tr>
+              <td><code>Endpoints</code></td>
+              <td>Rutas HTTP organizadas por modulo o funcionalidad. Aqui se define que URL existe y que hace.</td>
+            </tr>
+            <tr>
+              <td><code>Services</code></td>
+              <td>Logica externa o reusable: email, archivos, storage, pagos, integraciones o reglas compartidas.</td>
+            </tr>
+            <tr>
+              <td><code>Extensions</code></td>
+              <td>Metodos para ordenar configuracion de servicios y Swagger.</td>
+            </tr>
+            <tr>
+              <td><code>Middleware</code></td>
+              <td>Piezas que interceptan requests antes de llegar al endpoint: errores globales, logs, bloqueos, headers.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="clases">
+        <h2>5. Clases Base</h2>
+
+        <h3><code>ApplicationUser</code></h3>
+        <p>
+          Es tu usuario personalizado. Hereda de <code>IdentityUser</code>, que ya trae campos como
+          <code>Id</code>, <code>Email</code>, <code>UserName</code>, <code>PasswordHash</code> y seguridad.
+          Aqui agregas campos propios como nombre, apellido, telefono adicional o estado.
+        </p>
+        <pre><code>public class ApplicationUser : IdentityUser
+{
+    [Required]
+    public string? FirstName { get; set; }
+
+    [Required]
+    public string? LastName { get; set; }
+
+    public string FullName => $"{FirstName} {LastName}";
+}</code></pre>
+
+        <h3><code>ApplicationDbContext</code></h3>
+        <p>
+          Es la clase que representa la base de datos desde C#. Si usas Identity, debe heredar de
+          <code>IdentityDbContext&lt;ApplicationUser&gt;</code>.
+        </p>
+        <pre><code>public class ApplicationDbContext
+    : IdentityDbContext&lt;ApplicationUser&gt;
+{
+    public ApplicationDbContext(DbContextOptions&lt;ApplicationDbContext&gt; options)
+        : base(options)
+    {
+    }
+
+    public DbSet&lt;Product&gt; Products =&gt; Set&lt;Product&gt;();
+}</code></pre>
+
+        <h3>Requests y Responses</h3>
+        <p>
+          Los modelos de request describen lo que entra a la API. Los modelos response describen lo que sale.
+          Esto evita exponer directamente datos sensibles como <code>PasswordHash</code>.
+        </p>
+        <pre><code>public class RegisterUserRequest
+{
+    [Required]
+    public string? Email { get; set; }
+
+    [Required]
+    public string? FirstName { get; set; }
+
+    [Required]
+    public string? LastName { get; set; }
+}</code></pre>
+      </section>
+
+      <section id="program">
+        <h2>6. Program.cs</h2>
+        <p>
+          <code>Program.cs</code> es el centro de arranque. Ahi registras servicios, base de datos,
+          autenticacion, autorizacion, Swagger y endpoints.
+        </p>
+
+        <h3>Orden comun</h3>
+        <ol>
+          <li>Crear el builder.</li>
+          <li>Registrar Swagger.</li>
+          <li>Registrar DbContext.</li>
+          <li>Registrar Identity.</li>
+          <li>Registrar policies y servicios.</li>
+          <li>Construir la app.</li>
+          <li>Activar middleware: HTTPS, static files, auth.</li>
+          <li>Mapear endpoints.</li>
+          <li>Ejecutar la app.</li>
+        </ol>
+
+        <pre><code>var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddcustomSwagger();
+
+builder.Services.AddDbContext&lt;ApplicationDbContext&gt;(options =&gt;
+    options.UseNpgsql(connectionString));
+
+builder.Services.AddIdentityApiEndpoints&lt;ApplicationUser&gt;(options =&gt;
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddRoles&lt;IdentityRole&gt;()
+.AddEntityFrameworkStores&lt;ApplicationDbContext&gt;();
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy =&gt; policy.RequireRole("Admin"));
+
+var app = builder.Build();
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapGroup("/api/auth").MapIdentityApi&lt;ApplicationUser&gt;();
+app.MapCustomIdentityEndpoints();
+
+app.Run();</code></pre>
+      </section>
+
+      <section id="identity">
+        <h2>7. Identity Y Usuarios</h2>
+        <p>
+          ASP.NET Identity crea y maneja tablas como <code>AspNetUsers</code>, <code>AspNetRoles</code>,
+          <code>AspNetUserRoles</code>, <code>AspNetUserClaims</code> y mas. No tienes que crear esas tablas a mano.
+        </p>
+
+        <div class="step">
+          <p><strong>Registro:</strong> crea un usuario y guarda el password como hash, nunca como texto plano.</p>
+          <p><strong>Login:</strong> valida usuario y password, y devuelve token o cookie segun configuracion.</p>
+          <p><strong>Roles:</strong> permiten dar permisos como <code>Admin</code>, <code>User</code>, <code>Researcher</code>.</p>
+        </div>
+
+        <h3>Crear usuario desde codigo</h3>
+        <pre><code>var user = new ApplicationUser
+{
+    UserName = dto.Email,
+    Email = dto.Email,
+    FirstName = dto.FirstName,
+    LastName = dto.LastName
+};
+
+var result = await userManager.CreateAsync(user, "Admin123!");</code></pre>
+
+        <div class="warning">
+          La password temporal debe cumplir las reglas de Identity: mayuscula, numero, simbolo y longitud suficiente,
+          segun la configuracion del proyecto.
+        </div>
+      </section>
+
+      <section id="tokens">
+        <h2>8. Tokens Y Login</h2>
+        <p>
+          Cuando haces login correctamente, Identity devuelve un <code>accessToken</code>. Ese token se manda
+          luego en el header <code>Authorization</code> para llamar endpoints protegidos.
+        </p>
+
+        <h3>Login body</h3>
+        <pre><code>{
+  "email": "user@email.com",
+  "password": "Admin123!"
+}</code></pre>
+
+        <h3>Header para endpoints protegidos</h3>
+        <pre><code>Authorization: Bearer TU_ACCESS_TOKEN</code></pre>
+
+        <p>
+          El token representa al usuario autenticado. Si el endpoint exige un rol, el usuario tambien debe
+          tener ese rol asignado.
+        </p>
+      </section>
+
+      <section id="swagger">
+        <h2>9. Swagger</h2>
+        <p>
+          Swagger permite probar la API desde el navegador. Para proyectos con tokens, conviene agregar
+          seguridad Bearer para poder pegar el token y probar endpoints privados.
+        </p>
+
+        <pre><code>c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+{
+    Name = "Authorization",
+    Type = SecuritySchemeType.Http,
+    Scheme = "bearer",
+    BearerFormat = "JWT",
+    In = ParameterLocation.Header
+});</code></pre>
+
+        <div class="note">
+          Si Swagger dice <code>Failed to fetch</code>, muchas veces no es error del login.
+          Puede ser certificado HTTPS, puerto incorrecto, CORS o servidor apagado.
+        </div>
+      </section>
+
+      <section id="migraciones">
+        <h2>10. Migraciones</h2>
+        <p>
+          Las migraciones convierten tus clases C# en cambios reales de base de datos.
+          Con Identity, la primera migracion suele crear las tablas <code>AspNet...</code>.
+        </p>
+
+        <pre><code>dotnet ef migrations add InitialIdentity
+dotnet ef database update</code></pre>
+
+        <p>Cuando agregues una entidad nueva, por ejemplo <code>Artifact</code>, haces otra migracion:</p>
+        <pre><code>dotnet ef migrations add AddArtifacts
+dotnet ef database update</code></pre>
+      </section>
+
+      <section id="endpoints">
+        <h2>11. Endpoints Protegidos</h2>
+        <p>
+          Una vez que Identity funciona, puedes crear endpoints del negocio y protegerlos.
+        </p>
+
+        <h3>Endpoint publico</h3>
+        <pre><code>group.MapGet("/public", () =&gt;
+{
+    return Results.Ok("Cualquiera puede ver esto");
+});</code></pre>
+
+        <h3>Endpoint con login requerido</h3>
+        <pre><code>group.MapGet("/profile", (ClaimsPrincipal user) =&gt;
+{
+    return Results.Ok(user.Identity?.Name);
+})
+.RequireAuthorization();</code></pre>
+
+        <h3>Endpoint solo admin</h3>
+        <pre><code>group.MapDelete("/{id}", async (int id, ApplicationDbContext db) =&gt;
+{
+    // borrar registro
+    return Results.NoContent();
+})
+.RequireAuthorization("AdminOnly");</code></pre>
+      </section>
+
+      <section id="endpoint-modules">
+        <h2>12. Modulos Endpoint</h2>
+        <p>
+          En Minimal APIs, los endpoints pueden crecer rapido si dejas todo en <code>Program.cs</code>.
+          Por eso conviene moverlos a clases por modulo: auth, productos, usuarios, reportes, archivos, etc.
+        </p>
+
+        <h3>Para que sirve un archivo endpoint</h3>
+        <p>
+          Un endpoint define la entrada HTTP de tu sistema. Su trabajo principal es recibir el request,
+          validar lo basico, llamar servicios o base de datos, y devolver una respuesta HTTP.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Endpoint</th>
+              <th>Responsabilidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>AuthEndpoints.cs</code></td>
+              <td>Registro, login personalizado, forgot password, reset password, perfil.</td>
+            </tr>
+            <tr>
+              <td><code>ProductEndpoints.cs</code></td>
+              <td>Crear, listar, actualizar y borrar productos.</td>
+            </tr>
+            <tr>
+              <td><code>ArtifactEndpoints.cs</code></td>
+              <td>Endpoints propios del dominio del proyecto.</td>
+            </tr>
+            <tr>
+              <td><code>AdminEndpoints.cs</code></td>
+              <td>Operaciones administrativas protegidas por rol.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Patron recomendado</h3>
+        <pre><code>public static class ProductEndpoints
+{
+    public static IEndpointRouteBuilder MapProductEndpoints(this IEndpointRouteBuilder route)
+    {
+        var group = route.MapGroup("/api/products")
+            .WithTags("Products")
+            .RequireAuthorization();
+
+        group.MapGet("/", GetAllProducts)
+            .WithName("GetProducts")
+            .Produces&lt;List&lt;ProductResponse&gt;&gt;(StatusCodes.Status200OK);
+
+        group.MapPost("/", CreateProduct)
+            .WithName("CreateProduct")
+            .Produces&lt;ProductResponse&gt;(StatusCodes.Status201Created)
+            .Produces(StatusCodes.Status400BadRequest);
+
+        return route;
+    }
+
+    private static async Task&lt;IResult&gt; GetAllProducts(ApplicationDbContext db)
+    {
+        var products = await db.Products
+            .Select(p =&gt; new ProductResponse(p.Id, p.Name, p.Price))
+            .ToListAsync();
+
+        return Results.Ok(products);
+    }
+
+    private static async Task&lt;IResult&gt; CreateProduct(
+        ProductCreateRequest request,
+        ApplicationDbContext db)
+    {
+        var product = new Product
+        {
+            Name = request.Name,
+            Price = request.Price
+        };
+
+        db.Products.Add(product);
+        await db.SaveChangesAsync();
+
+        var response = new ProductResponse(product.Id, product.Name, product.Price);
+        return Results.Created($"/api/products/{product.Id}", response);
+    }
+}</code></pre>
+
+        <div class="note">
+          Regla practica: <code>Program.cs</code> registra servicios y llama <code>MapXEndpoints()</code>.
+          Los detalles de cada ruta viven en su archivo endpoint.
+        </div>
+      </section>
+
+      <section id="dtos">
+        <h2>13. DTOs Y Respuestas</h2>
+        <p>
+          DTO significa Data Transfer Object. En una API, los DTOs evitan que expongas directamente
+          tus entidades de base de datos y te ayudan a controlar exactamente que entra y que sale.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Ejemplo</th>
+              <th>Uso</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Request</td>
+              <td><code>CreateProductRequest</code></td>
+              <td>Datos que el cliente manda para crear o actualizar algo.</td>
+            </tr>
+            <tr>
+              <td>Response</td>
+              <td><code>ProductResponse</code></td>
+              <td>Datos que la API devuelve al cliente.</td>
+            </tr>
+            <tr>
+              <td>Query</td>
+              <td><code>ProductSearchRequest</code></td>
+              <td>Filtros, paginacion, ordenamiento o busqueda.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Ejemplo request</h3>
+        <pre><code>public class ProductCreateRequest
+{
+    [Required]
+    public string? Name { get; set; }
+
+    [Range(0.01, 999999)]
+    public decimal Price { get; set; }
+}</code></pre>
+
+        <h3>Ejemplo response</h3>
+        <pre><code>public record ProductResponse(
+    int Id,
+    string Name,
+    decimal Price
+);</code></pre>
+
+        <div class="warning">
+          No devuelvas <code>ApplicationUser</code> completo desde un endpoint. Puede incluir datos internos
+          como hashes, security stamps o campos que no quieres exponer.
+        </div>
+      </section>
+
+      <section id="services">
+        <h2>14. Services</h2>
+        <p>
+          Un service contiene logica reutilizable o comunicacion con sistemas externos. No todo necesita
+          un service, pero son utiles cuando la logica se repite, crece o no pertenece directamente al endpoint.
+        </p>
+
+        <h3>Cuando crear un service</h3>
+        <ul>
+          <li>Enviar emails.</li>
+          <li>Subir archivos a disco, Azure Blob, S3 u otro storage.</li>
+          <li>Consumir una API externa.</li>
+          <li>Generar reportes, codigos, tokens propios o documentos.</li>
+          <li>Centralizar reglas de negocio usadas por varios endpoints.</li>
+        </ul>
+
+        <h3>Interfaz</h3>
+        <pre><code>public interface IEmailService
+{
+    Task SendAsync(string to, string subject, string htmlMessage);
+}</code></pre>
+
+        <h3>Implementacion</h3>
+        <pre><code>public class ConsoleEmailService : IEmailService
+{
+    public Task SendAsync(string to, string subject, string htmlMessage)
+    {
+        Console.WriteLine($"To: {to}");
+        Console.WriteLine($"Subject: {subject}");
+        Console.WriteLine(htmlMessage);
+        return Task.CompletedTask;
+    }
+}</code></pre>
+
+        <h3>Registro en <code>Program.cs</code></h3>
+        <pre><code>builder.Services.AddTransient&lt;IEmailService, ConsoleEmailService&gt;();</code></pre>
+
+        <h3>Uso en endpoint</h3>
+        <pre><code>private static async Task&lt;IResult&gt; ForgotPassword(
+    ForgotPasswordRequest request,
+    UserManager&lt;ApplicationUser&gt; userManager,
+    IEmailService emailService)
+{
+    var user = await userManager.FindByEmailAsync(request.Email);
+
+    if (user is null)
+    {
+        return Results.Ok();
+    }
+
+    await emailService.SendAsync(user.Email!, "Reset password", "Link de recuperacion");
+    return Results.Ok();
+}</code></pre>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Lifetime</th>
+              <th>Uso comun</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>AddTransient</code></td>
+              <td>Servicio liviano; se crea cada vez que se pide.</td>
+            </tr>
+            <tr>
+              <td><code>AddScoped</code></td>
+              <td>Servicio por request HTTP; comun si usa <code>DbContext</code>.</td>
+            </tr>
+            <tr>
+              <td><code>AddSingleton</code></td>
+              <td>Una sola instancia para toda la app; cuidado con estado mutable y DbContext.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="middleware">
+        <h2>15. Middleware</h2>
+        <p>
+          Un middleware intercepta todas o muchas solicitudes antes de que lleguen al endpoint.
+          Sirve para comportamiento global, no para reglas pequenas de un solo endpoint.
+        </p>
+
+        <h3>Usos comunes</h3>
+        <ul>
+          <li>Manejar excepciones globalmente.</li>
+          <li>Registrar logs de requests.</li>
+          <li>Bloquear rutas especificas.</li>
+          <li>Agregar headers de seguridad.</li>
+          <li>Medir tiempo de respuesta.</li>
+        </ul>
+
+        <h3>Ejemplo: bloquear endpoints default</h3>
+        <pre><code>public class BlockIdentityEndpoints
+{
+    private readonly RequestDelegate _next;
+
+    private static readonly string[] BlockedPaths =
+    [
+        "/api/auth/register",
+        "/api/auth/forgotpassword",
+        "/api/auth/resetpassword"
+    ];
+
+    public BlockIdentityEndpoints(RequestDelegate next)
+    {
+        _next = next;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var path = context.Request.Path.Value?.ToLowerInvariant();
+
+        if (path is not null &amp;&amp; BlockedPaths.Contains(path))
+        {
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+            await context.Response.WriteAsync("Not Found");
+            return;
+        }
+
+        await _next(context);
+    }
+}</code></pre>
+
+        <h3>Registro en pipeline</h3>
+        <pre><code>app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseMiddleware&lt;BlockIdentityEndpoints&gt;();</code></pre>
+
+        <div class="warning">
+          El orden importa. Normalmente <code>UseAuthentication()</code> debe ir antes de
+          <code>UseAuthorization()</code>. Un middleware mal ubicado puede bloquear rutas o cambiar respuestas.
+        </div>
+      </section>
+
+      <section id="extensions">
+        <h2>16. Extensions</h2>
+        <p>
+          Las extension methods ayudan a mantener <code>Program.cs</code> limpio. No son obligatorias,
+          pero en proyectos medianos hacen que la configuracion sea mas legible.
+        </p>
+
+        <h3>Ejemplo: Swagger</h3>
+        <pre><code>public static class OpenAPISwaggerExtensions
+{
+    public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
+    {
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
+        return services;
+    }
+}</code></pre>
+
+        <h3>Ejemplo: agrupar registros de servicios</h3>
+        <pre><code>public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddApplicationServices(
+        this IServiceCollection services)
+    {
+        services.AddTransient&lt;IEmailService, ConsoleEmailService&gt;();
+        services.AddScoped&lt;IFileStorageService, LocalFileStorageService&gt;();
+        return services;
+    }
+}</code></pre>
+
+        <h3>Uso en <code>Program.cs</code></h3>
+        <pre><code>builder.Services.AddCustomSwagger();
+builder.Services.AddApplicationServices();</code></pre>
+      </section>
+
+      <section id="configuracion">
+        <h2>17. Configuracion</h2>
+        <p>
+          La configuracion incluye connection strings, URLs base, claves externas y opciones del proyecto.
+          No todo debe vivir en codigo.
+        </p>
+
+        <h3><code>appsettings.json</code></h3>
+        <pre><code>{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Database=mydb;Username=postgres;Password=..."
+  },
+  "BaseURL": "https://localhost:7028"
+}</code></pre>
+
+        <h3>User Secrets en desarrollo</h3>
+        <pre><code>dotnet user-secrets init
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Database=mydb;Username=postgres;Password=secret"</code></pre>
+
+        <h3>Leer configuracion</h3>
+        <pre><code>var connectionString = builder.Configuration
+    .GetConnectionString("DefaultConnection");
+
+var baseUrl = builder.Configuration["BaseURL"];</code></pre>
+
+        <div class="warning">
+          No subas passwords reales, API keys o secrets al repositorio. En desarrollo usa User Secrets;
+          en produccion usa variables de entorno o un secret manager.
+        </div>
+      </section>
+
+      <section id="seed">
+        <h2>18. Seed Inicial</h2>
+        <p>
+          El seed inicial crea datos necesarios para que la app arranque: roles, usuario admin,
+          categorias base o configuraciones minimas.
+        </p>
+
+        <h3>Seed de roles</h3>
+        <pre><code>public static async Task SeedRolesAsync(IServiceProvider services)
+{
+    using var scope = services.CreateScope();
+    var roleManager = scope.ServiceProvider.GetRequiredService&lt;RoleManager&lt;IdentityRole&gt;&gt;();
+
+    string[] roles = ["Admin", "Researcher", "User"];
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}</code></pre>
+
+        <h3>Llamada al seed</h3>
+        <pre><code>var app = builder.Build();
+
+await SeedRolesAsync(app.Services);
+
+app.Run();</code></pre>
+
+        <div class="note">
+          Si intentas asignar un rol que no existe, <code>AddToRoleAsync</code> falla o no produce el efecto esperado.
+          Por eso el seed de roles suele hacerse temprano.
+        </div>
+      </section>
+
+      <section id="roles">
+        <h2>19. Roles Y Policies</h2>
+        <p>
+          Los roles describen quien es el usuario. Las policies describen que regla debe cumplir
+          para entrar a un endpoint.
+        </p>
+
+        <pre><code>builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy =&gt; policy.RequireRole("Admin"));</code></pre>
+
+        <p>Asignar un rol a un usuario:</p>
+        <pre><code>await userManager.AddToRoleAsync(user, "Admin");</code></pre>
+
+        <div class="warning">
+          Para asignar un rol, el rol debe existir antes en la tabla <code>AspNetRoles</code>.
+          En proyectos reales suele hacerse un seed inicial de roles.
+        </div>
+      </section>
+
+      <section id="errores">
+        <h2>20. Errores Comunes</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Error</th>
+              <th>Causa probable</th>
+              <th>Solucion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>PasswordRequiresDigit</code></td>
+              <td>La password no tiene numero.</td>
+              <td>Usar algo como <code>Admin123!</code>.</td>
+            </tr>
+            <tr>
+              <td><code>PasswordRequiresUpper</code></td>
+              <td>La password no tiene mayuscula.</td>
+              <td>Agregar una letra A-Z.</td>
+            </tr>
+            <tr>
+              <td><code>Failed to fetch</code></td>
+              <td>Swagger no pudo conectar: certificado, puerto, CORS o servidor apagado.</td>
+              <td>Verificar URL, confiar certificado con <code>dotnet dev-certs https --trust</code>.</td>
+            </tr>
+            <tr>
+              <td><code>401 Unauthorized</code></td>
+              <td>No mandaste token, o el token expiro.</td>
+              <td>Hacer login y usar <code>Authorization: Bearer token</code>.</td>
+            </tr>
+            <tr>
+              <td><code>403 Forbidden</code></td>
+              <td>Estas logueado, pero no tienes el rol requerido.</td>
+              <td>Asignar el rol correcto al usuario.</td>
+            </tr>
+            <tr>
+              <td>Error de conexion DB</td>
+              <td>Cadena de conexion incorrecta o base apagada.</td>
+              <td>Revisar <code>appsettings.json</code>, secrets y servidor PostgreSQL.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="checklist">
+        <h2>21. Checklist Final</h2>
+        <ol class="checklist">
+          <li>Proyecto API creado.</li>
+          <li>Paquetes instalados.</li>
+          <li><code>ApplicationUser</code> creado.</li>
+          <li><code>ApplicationDbContext</code> creado.</li>
+          <li>Conexion a base de datos configurada.</li>
+          <li>Estructura de carpetas definida: <code>Data</code>, <code>Models</code>, <code>Endpoints</code>, <code>Services</code>, <code>Extensions</code>, <code>Middleware</code>.</li>
+          <li>Identity registrado en <code>Program.cs</code>.</li>
+          <li>Swagger configurado con Bearer token.</li>
+          <li>Services registrados con el lifetime correcto: <code>Transient</code>, <code>Scoped</code> o <code>Singleton</code>.</li>
+          <li>Middleware global agregado solo si aporta valor real.</li>
+          <li><code>UseAuthentication()</code> antes de <code>UseAuthorization()</code>.</li>
+          <li>Endpoints de auth mapeados.</li>
+          <li>Endpoints del negocio separados por modulo: productos, usuarios, reportes, archivos, etc.</li>
+          <li>Requests y responses creados para no exponer entidades internas.</li>
+          <li>Seed inicial creado para roles y datos necesarios.</li>
+          <li>Migracion creada y aplicada.</li>
+          <li>Registro probado.</li>
+          <li>Login probado.</li>
+          <li>Token pegado en Swagger con <code>Authorize</code>.</li>
+          <li>Endpoint protegido probado con <code>RequireAuthorization()</code>.</li>
+          <li>Roles/policies probados si el proyecto los usa.</li>
+          <li>Secrets fuera del codigo fuente.</li>
+          <li>Errores comunes documentados para desarrollo.</li>
+        </ol>
+
+        <div class="note">
+          Cuando todo esto funciona, ya tienes la base comun lista. A partir de ahi empiezas a construir
+          las entidades y funcionalidades propias del proyecto.
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

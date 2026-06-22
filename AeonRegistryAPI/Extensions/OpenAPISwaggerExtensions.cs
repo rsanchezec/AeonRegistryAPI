@@ -53,6 +53,33 @@ namespace AeonRegistryAPI.Extensions
                     }
                 });
 
+                string[] hiddenEndpoints = [
+                       "api/auth/register",
+                        "api/auth/refresh",
+                        "api/auth/confirmemail",
+                        "api/auth/resendconfirmationemail",
+                        "api/auth/forgotpassword",
+                        "api/auth/resetpassword",
+                        "api/auth/manage",
+                        "api/auth/manage/info",
+                        "api/auth/manage/2fa"
+                   ];
+
+                c.DocInclusionPredicate((docName, apiDesc) =>
+                {
+                    var path = apiDesc.RelativePath?.ToLowerInvariant();
+
+                    if (path is null)
+                        return false;
+
+                    if (hiddenEndpoints.Contains(path, StringComparer.OrdinalIgnoreCase))
+                    {
+                        return false;
+                    }
+
+                    return true;
+                });
+
             });
            return services;
         }
