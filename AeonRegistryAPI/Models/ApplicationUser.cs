@@ -12,6 +12,12 @@ namespace AeonRegistryAPI.Models
 
         public string FullName => $"{FirstName} {LastName}";
 
-       
+
+        public ICollection<CatalogRecord> SubmittedCatalogRecords { get; set; } = [];
+
+        public ICollection<CatalogRecord> VerifiedCatalogRecords { get; set; } = [];
+
+        public ICollection<ArtifactMediaFile> UploadedMedia { get; set; } = [];
+
     }
 }
